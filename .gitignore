@@ -119,6 +119,6 @@ ehthumbs.db
 Thumbs.db
 
 # Data files
-*.h5
+# *.h5
 *.trk
 *.trks
