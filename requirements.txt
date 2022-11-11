@@ -2,3 +2,10 @@ glob
 imageio
 matplotlib
 deepcell_spots
+numba
+seaborn
+tqdm
+scikit-learn
+pandas
+scipy
+skimage
