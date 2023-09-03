@@ -1,3 +1,3 @@
 # Polaris Publication Figures
 
-This repo contains code to reproduce the figures from Laubscher, et al. The scripts to generate the figures are at the top-level directory. Notebooks to perform prediction are available in the *notebooks* folder. The functions for prediction will require an API key for access, available upon reasonable request. 
+This repo contains notebooks to reproduce the figures from Laubscher et al. (2023). The `PolarisPublicationData` object downloads the data required to run these notebooks. The `SpotDetection` application will require an API key for access, available at [users.deepcell.org](users.deepcell.org) for academic users. 
