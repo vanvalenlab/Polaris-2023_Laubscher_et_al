@@ -5,7 +5,7 @@ import pandas as pd
 from deepcell.datasets.dataset import Dataset
 
 DATA_URL = "https://deepcell-data.s3.us-west-1.amazonaws.com/spot_detection/PolarisPublicationData.zip"
-DATA_HASH = "e5292488985fd49505ca2c615bc52864"
+DATA_HASH = "a5469934888865131a1567da22ff17ff"
 
 class PolarisPublicationData(Dataset):
     def __init__(self):
@@ -31,9 +31,16 @@ class PolarisPublicationData(Dataset):
             raise ValueError('Figure must be one of 1, 2, S3, S5, S6, S7, S8, S9, S10, S11')
 
         if figure=='1':
-            fname = 'MERFISH_cropped.tiff'
-            fpath = os.path.join(self.path, fname)
-            return self._load_tif(fpath)
+            MERFISH_fname = 'MERFISH_cropped.tiff'
+            MERFISH_fpath = os.path.join(self.path, MERFISH_fname)
+            MERFISH_im = self._load_tif(MERFISH_fpath)
+            
+            seqFISH_fname = 'seqFISH_image.tiff'
+            seqFISH_fpath = os.path.join(self.path, seqFISH_fname)
+            seqFISH_im = self._load_tif(seqFISH_fpath)
+            seqFISH_im = np.expand_dims(seqFISH_im, axis=[0,-1])
+            
+            return MERFISH_im, seqFISH_im
         
         if figure=='2':
             results_fname = 'Petukhov_results_226.csv'
@@ -90,6 +97,10 @@ class PolarisPublicationData(Dataset):
             trackpy_fname = 'trackpy_coords.npy'
             trackpy_fpath = os.path.join(self.path, trackpy_fname)
             trackpy_coords = self._load_npy(trackpy_fpath)
+            
+            airloc_fname = 'airlocalize_coords.npy'
+            airloc_fpath = os.path.join(self.path, airloc_fname)
+            airloc_coords = self._load_npy(airloc_fpath)
 
             polaris_fname = 'polaris_coords.npy'
             polaris_fpath = os.path.join(self.path, polaris_fname)
@@ -100,6 +111,7 @@ class PolarisPublicationData(Dataset):
                 'LoG': LoG_coords,
                 'PLM': PLM_coords,
                 'trackpy': trackpy_coords,
+                'airloc': airloc_coords,
                 'polaris': polaris_coords
             }
             
@@ -111,15 +123,23 @@ class PolarisPublicationData(Dataset):
             return self._load_csv(fpath)
 
         if figure=='S7':
-            density_fname = 'density_benchmarking_data.csv'
+            density_fname = 'density_method_benchmarking.csv'
             density_fpath = os.path.join(self.path, density_fname)
-            density_data = self._load_csv(density_fpath)
+            density_method_data = self._load_csv(density_fpath)
 
-            intensity_fname = 'intensity_benchmarking_data.csv'
+            intensity_fname = 'intensity_method_benchmarking.csv'
             intensity_fpath = os.path.join(self.path, intensity_fname)
-            intensity_data = self._load_csv(intensity_fpath)
+            intensity_method_data = self._load_csv(intensity_fpath)
             
-            return density_data, intensity_data
+            density_fname = 'density_model_benchmarking.csv'
+            density_fpath = os.path.join(self.path, density_fname)
+            density_model_data = self._load_csv(density_fpath)
+
+            intensity_fname = 'intensity_model_benchmarking.csv'
+            intensity_fpath = os.path.join(self.path, intensity_fname)
+            intensity_model_data = self._load_csv(intensity_fpath)
+            
+            return density_method_data, intensity_method_data, density_model_data, intensity_model_data
             
         if figure=='S8':
             fname = 'dropout_benchmarking_data.csv'
