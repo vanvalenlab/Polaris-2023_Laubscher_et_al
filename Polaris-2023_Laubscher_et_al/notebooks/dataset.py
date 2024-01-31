@@ -5,7 +5,7 @@ import pandas as pd
 from deepcell.datasets.dataset import Dataset
 
 DATA_URL = "https://deepcell-data.s3.us-west-1.amazonaws.com/spot_detection/PolarisPublicationData.zip"
-DATA_HASH = "a5469934888865131a1567da22ff17ff"
+DATA_HASH = "8b82b6bd3e4aca811464279487630c22"
 
 class PolarisPublicationData(Dataset):
     def __init__(self):
@@ -20,27 +20,20 @@ class PolarisPublicationData(Dataset):
         Laubscher et al. (2023).
 
         Args:
-            figure (str): Data split to load from `['1', '2', 'S3', 'S5', 'S6', 'S7', 'S8',
-            'S9', 'S10', 'S11']`.
+            figure (str): Data split to load from `['1', '2', 'S2', 'S4', 'S5', 'S6', 'S7',
+            'S8', 'S9', 'S11']`.
 
         Raises:
-            ValueError: Figure must be one of `['1', '2', 'S3', 'S5', 'S6', 'S7', 'S8', 'S9',
-            'S10', 'S11']`.
+            ValueError: Figure must be one of `['1', '2', 'S2', 'S4', 'S5', 'S6', 'S7', 'S8',
+            'S9', 'S11']`.
         """
-        if figure not in ['1', '2', 'S3', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'S11']:
-            raise ValueError('Figure must be one of 1, 2, S3, S5, S6, S7, S8, S9, S10, S11')
+        if figure not in ['1', '2', 'S2', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10']:
+            raise ValueError('Figure must be one of 1, 2, S2, S4, S5, S6, S7, S8, S9, S10')
 
         if figure=='1':
-            MERFISH_fname = 'MERFISH_cropped.tiff'
-            MERFISH_fpath = os.path.join(self.path, MERFISH_fname)
-            MERFISH_im = self._load_tif(MERFISH_fpath)
-            
-            seqFISH_fname = 'seqFISH_image.tiff'
-            seqFISH_fpath = os.path.join(self.path, seqFISH_fname)
-            seqFISH_im = self._load_tif(seqFISH_fpath)
-            seqFISH_im = np.expand_dims(seqFISH_im, axis=[0,-1])
-            
-            return MERFISH_im, seqFISH_im
+            fname = 'MERFISH_cropped.tiff'
+            fpath = os.path.join(self.path, fname)
+            return self._load_tif(fpath)
         
         if figure=='2':
             results_fname = 'Petukhov_results_226.csv'
@@ -54,7 +47,7 @@ class PolarisPublicationData(Dataset):
             
             return results, segmentation
             
-        if figure=='S3':
+        if figure=='S2':
             MERFISH_fname = 'MERFISH_image.tiff'
             MERFISH_fpath = os.path.join(self.path, MERFISH_fname)
             MERFISH_im = self._load_tif(MERFISH_fpath)
@@ -81,7 +74,7 @@ class PolarisPublicationData(Dataset):
             
             return MERFISH_im, ISS_im, splitFISH_im, seqFISH_im, SunTag_im
             
-        if figure=='S5':
+        if figure=='S4':
             DoG_fname = 'DoG_coords.npy'
             DoG_fpath = os.path.join(self.path, DoG_fname)
             DoG_coords = self._load_npy(DoG_fpath)
@@ -97,14 +90,14 @@ class PolarisPublicationData(Dataset):
             trackpy_fname = 'trackpy_coords.npy'
             trackpy_fpath = os.path.join(self.path, trackpy_fname)
             trackpy_coords = self._load_npy(trackpy_fpath)
-            
-            airloc_fname = 'airlocalize_coords.npy'
-            airloc_fpath = os.path.join(self.path, airloc_fname)
-            airloc_coords = self._load_npy(airloc_fpath)
 
             polaris_fname = 'polaris_coords.npy'
             polaris_fpath = os.path.join(self.path, polaris_fname)
             polaris_coords = self._load_npy(polaris_fpath)
+            
+            airloc_fname = 'airlocalize_coords.npy'
+            airloc_fpath = os.path.join(self.path, airloc_fname)
+            airloc_coords = self._load_npy(airloc_fpath)
 
             all_coords = {
                 'DoG': DoG_coords,
@@ -117,36 +110,39 @@ class PolarisPublicationData(Dataset):
             
             return all_coords
             
-        if figure=='S6':
+        if figure=='S5':
             fname = 'receptive_field_data.csv'
             fpath = os.path.join(self.path, fname)
             return self._load_csv(fpath)
 
+        if figure=='S6':
+            density_fname_model = 'density_model_benchmarking.csv'
+            density_fpath_model = os.path.join(self.path, density_fname_model)
+            density_data_model = self._load_csv(density_fpath_model)
+
+            intensity_fname_model = 'intensity_model_benchmarking.csv'
+            intensity_fpath_model = os.path.join(self.path, intensity_fname_model)
+            intensity_data_model = self._load_csv(intensity_fpath_model)
+            
+            density_fname_method = 'density_method_benchmarking.csv'
+            density_fpath_method = os.path.join(self.path, density_fname_method)
+            density_data_method = self._load_csv(density_fpath_method)
+
+            intensity_fname_method = 'intensity_method_benchmarking.csv'
+            intensity_fpath_method = os.path.join(self.path, intensity_fname_method)
+            intensity_data_method = self._load_csv(intensity_fpath_method)
+            
+            return (density_data_model,
+                    intensity_data_model,
+                    density_data_method,
+                    intensity_data_method)
+            
         if figure=='S7':
-            density_fname = 'density_method_benchmarking.csv'
-            density_fpath = os.path.join(self.path, density_fname)
-            density_method_data = self._load_csv(density_fpath)
-
-            intensity_fname = 'intensity_method_benchmarking.csv'
-            intensity_fpath = os.path.join(self.path, intensity_fname)
-            intensity_method_data = self._load_csv(intensity_fpath)
-            
-            density_fname = 'density_model_benchmarking.csv'
-            density_fpath = os.path.join(self.path, density_fname)
-            density_model_data = self._load_csv(density_fpath)
-
-            intensity_fname = 'intensity_model_benchmarking.csv'
-            intensity_fpath = os.path.join(self.path, intensity_fname)
-            intensity_model_data = self._load_csv(intensity_fpath)
-            
-            return density_method_data, intensity_method_data, density_model_data, intensity_model_data
-            
-        if figure=='S8':
             fname = 'dropout_benchmarking_data.csv'
             fpath = os.path.join(self.path, fname)
             return self._load_csv(fpath)
 
-        if figure=='S9':
+        if figure=='S8':
             MERFISH_im_fname = 'liu_MERFISH_im.tiff'
             MERFISH_im_fpath = os.path.join(self.path, MERFISH_im_fname)
             MERFISH_im = self._load_tif(MERFISH_im_fpath)
@@ -165,7 +161,7 @@ class PolarisPublicationData(Dataset):
             
             return MERFISH_im, MERFISH_results, seqFISH_im, seqFISH_results
 
-        if figure=='S10':
+        if figure=='S9':
             Petukhov_data_fname = 'petukhov_polaris_comparison.csv'
             Petukhov_data_fpath = os.path.join(self.path, Petukhov_data_fname)
             Petukhov_data = self._load_csv(Petukhov_data_fpath)
@@ -186,7 +182,7 @@ class PolarisPublicationData(Dataset):
             
             return all_data
 
-        if figure=='S11':
+        if figure=='S10':
             results_fname = 'feldman_iss_results.csv'
             results_fpath = os.path.join(self.path, results_fname)
             results = self._load_csv(results_fpath)
